@@ -23,8 +23,8 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<UserInfoResponseDto> create(@Valid @RequestBody CreateUserRequestDto requestDto, HttpServletRequest request) {
-        UserInfoResponseDto userInfoResponseDto = userService.create(requestDto.getUsername(), requestDto.getPassword(), requestDto.getEmail());
+    public ResponseEntity<UserInfoResponseDto> userCreate(@Valid @RequestBody CreateUserRequestDto requestDto, HttpServletRequest request) {
+        UserInfoResponseDto userInfoResponseDto = userService.userCreate(requestDto.getUsername(), requestDto.getPassword(), requestDto.getEmail());
         HttpSession session = request.getSession();
         session.setAttribute("sessionKey", userInfoResponseDto.getId());
         return new ResponseEntity<>(userInfoResponseDto, HttpStatus.CREATED);
@@ -32,7 +32,7 @@ public class UserController {
 
     @GetMapping("/login")
     public ResponseEntity<UserInfoResponseDto> userLogin(@Valid @RequestBody LoginUserRequestDto requestDto, HttpServletRequest request) {
-        UserInfoResponseDto userInfoResponseDto = userService.login(requestDto.getEmail(), requestDto.getPassword());
+        UserInfoResponseDto userInfoResponseDto = userService.userLogin(requestDto.getEmail(), requestDto.getPassword());
         HttpSession session = request.getSession();
         session.setAttribute("sessionKey", userInfoResponseDto.getId());
         return new ResponseEntity<>(userInfoResponseDto, HttpStatus.OK);
@@ -56,7 +56,7 @@ public class UserController {
     public ResponseEntity<Void> userDelete(@Valid @RequestBody DeleteUserRequestDto requestDto, HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         Long id = (Long) session.getAttribute("sessionKey");
-        userService.deleteUser(id, requestDto.getPassword());
+        userService.userDelete(id, requestDto.getPassword());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

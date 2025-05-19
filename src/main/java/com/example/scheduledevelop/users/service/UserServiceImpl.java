@@ -1,5 +1,6 @@
 package com.example.scheduledevelop.users.service;
 
+import com.example.scheduledevelop.config.PasswordEncoder;
 import com.example.scheduledevelop.entity.User;
 import com.example.scheduledevelop.exception.WrongPasswordException;
 import com.example.scheduledevelop.users.dto.responseDto.UserInfoResponseDto;
@@ -12,26 +13,28 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService{
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
-    public UserInfoResponseDto create(String username, String password, String email) {
-        User user = new User(username, password, email);
+    public UserInfoResponseDto userCreate(String username, String password, String email) {
+        String encodePassword = passwordEncoder.encode(password);
+        User user = new User(username, encodePassword, email);
         User savedUser = userRepository.save(user);
         return new UserInfoResponseDto(savedUser.getId(), savedUser.getUsername(), savedUser.getEmail(), savedUser.getCreateAt(), savedUser.getUpdateAt());
     }
 
     @Override
-    public UserInfoResponseDto login(String email, String password) {
+    public UserInfoResponseDto userLogin(String email, String password) {
         User findUser = userRepository.findByEmailOrElse(email);
-        if (!findUser.getPassword().equals(password)) {
-            throw new WrongPasswordException();
-        }
+        checkUserPassword(findUser, password);
+
         return new UserInfoResponseDto(findUser.getId(), findUser.getUsername(), findUser.getEmail(), findUser.getCreateAt(), findUser.getUpdateAt());
     }
 
     @Override
     public UserInfoResponseDto userFindById(Long id) {
         User finduser = userRepository.findByIdOrElseThrow(id);
+
         return new UserInfoResponseDto(finduser.getId(), finduser.getUsername(), finduser.getEmail(), finduser.getCreateAt(), finduser.getUpdateAt());
     }
 
@@ -39,19 +42,25 @@ public class UserServiceImpl implements UserService{
     @Override
     public UserInfoResponseDto userUpdate(Long id, String username, String password, String email) {
         User findUser = userRepository.findByIdOrElseThrow(id);
-        if(!findUser.getPassword().equals(password)){
-            throw new WrongPasswordException();
-        }
+        checkUserPassword(findUser, password);
+
         findUser.updateUser(username, email);
+
         return new UserInfoResponseDto(findUser.getId(), findUser.getUsername(), findUser.getEmail(), findUser.getCreateAt(), findUser.getUpdateAt());
     }
 
     @Override
-    public void deleteUser(Long id, String password) {
+    public void userDelete(Long id, String password) {
         User findUser = userRepository.findByIdOrElseThrow(id);
-        if(!findUser.getPassword().equals(password)) {
-            throw new WrongPasswordException();
-        }
+        checkUserPassword(findUser, password);
+
         userRepository.delete(findUser);
     }
+
+    private void checkUserPassword(User findUser, String password) {
+        if(passwordEncoder.matches(password, findUser.getPassword())) {
+            throw new WrongPasswordException();
+        }
+    }
+
 }

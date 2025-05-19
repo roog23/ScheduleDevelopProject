@@ -24,7 +24,7 @@ public class ScheduleController {
     public ResponseEntity<ScheduleInfoResponseDto> scheduleCreate(@Valid @RequestBody CreateScheduleRequestDto requestDto, HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         Long userId = (Long) session.getAttribute("sessionKey");
-        ScheduleInfoResponseDto responseDto = scheduleService.create(userId, requestDto.getTitle(), requestDto.getText());
+        ScheduleInfoResponseDto responseDto = scheduleService.scheduleCreate(userId, requestDto.getTitle(), requestDto.getText());
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 
@@ -47,7 +47,7 @@ public class ScheduleController {
         HttpSession session = request.getSession(false);
         Long userId = (Long) session.getAttribute("sessionKey");
 
-        scheduleService.delete(id, userId, requestDto.getPassword());
+        scheduleService.scheduleDelete(id, userId, requestDto.getPassword());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
