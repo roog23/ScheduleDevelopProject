@@ -8,6 +8,7 @@ import com.example.scheduledevelop.schedules.dto.response.ScheduleInfoResponseDt
 import com.example.scheduledevelop.schedules.service.ScheduleService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ public class ScheduleController {
     public final ScheduleService scheduleService;
 
     @PostMapping
-    public ResponseEntity<ScheduleInfoResponseDto> scheduleCreate(@RequestBody CreateScheduleRequestDto requestDto, HttpServletRequest request) {
+    public ResponseEntity<ScheduleInfoResponseDto> scheduleCreate(@Valid @RequestBody CreateScheduleRequestDto requestDto, HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         Long userId = (Long) session.getAttribute("sessionKey");
         ScheduleInfoResponseDto responseDto = scheduleService.create(userId, requestDto.getTitle(), requestDto.getText());
@@ -34,7 +35,7 @@ public class ScheduleController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ScheduleInfoResponseDto> scheduleUpdate(@PathVariable Long id, @RequestBody UpdateScheduleRequestDto requestDto, HttpServletRequest request) {
+    public ResponseEntity<ScheduleInfoResponseDto> scheduleUpdate(@PathVariable Long id, @Valid @RequestBody UpdateScheduleRequestDto requestDto, HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         Long userId = (Long) session.getAttribute("sessionKey");
         ScheduleInfoResponseDto responseDto = scheduleService.scheduleUpdate(id, userId, requestDto.getPassword(), requestDto.getTitle(), requestDto.getText());
@@ -42,7 +43,7 @@ public class ScheduleController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> scheduleDelete(@PathVariable Long id, @RequestBody DeleteScheduleRequestDto requestDto, HttpServletRequest request) {
+    public ResponseEntity<Void> scheduleDelete(@PathVariable Long id, @Valid @RequestBody DeleteScheduleRequestDto requestDto, HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         Long userId = (Long) session.getAttribute("sessionKey");
 

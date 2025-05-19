@@ -8,6 +8,7 @@ import com.example.scheduledevelop.users.dto.responseDto.UserInfoResponseDto;
 import com.example.scheduledevelop.users.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -22,7 +23,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<UserInfoResponseDto> create(@RequestBody CreateUserRequestDto requestDto, HttpServletRequest request) {
+    public ResponseEntity<UserInfoResponseDto> create(@Valid @RequestBody CreateUserRequestDto requestDto, HttpServletRequest request) {
         UserInfoResponseDto userInfoResponseDto = userService.create(requestDto.getUsername(), requestDto.getPassword(), requestDto.getEmail());
         HttpSession session = request.getSession();
         session.setAttribute("sessionKey", userInfoResponseDto.getId());
@@ -30,7 +31,7 @@ public class UserController {
     }
 
     @GetMapping("/login")
-    public ResponseEntity<UserInfoResponseDto> userLogin(@RequestBody LoginUserRequestDto requestDto, HttpServletRequest request) {
+    public ResponseEntity<UserInfoResponseDto> userLogin(@Valid @RequestBody LoginUserRequestDto requestDto, HttpServletRequest request) {
         UserInfoResponseDto userInfoResponseDto = userService.login(requestDto.getEmail(), requestDto.getPassword());
         HttpSession session = request.getSession();
         session.setAttribute("sessionKey", userInfoResponseDto.getId());
@@ -44,7 +45,7 @@ public class UserController {
     }
 
     @PatchMapping
-    public ResponseEntity<UserInfoResponseDto> userUpdate(@RequestBody UpdateUserRequestDto requestDto, HttpServletRequest request) {
+    public ResponseEntity<UserInfoResponseDto> userUpdate(@Valid @RequestBody UpdateUserRequestDto requestDto, HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         Long id = (Long) session.getAttribute("sessionKey");
         UserInfoResponseDto userInfoResponseDto = userService.userUpdate(id, requestDto.getUsername(), requestDto.getPassword(), requestDto.getEmail());
@@ -52,7 +53,7 @@ public class UserController {
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> userDelete(@RequestBody DeleteUserRequestDto requestDto, HttpServletRequest request) {
+    public ResponseEntity<Void> userDelete(@Valid @RequestBody DeleteUserRequestDto requestDto, HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         Long id = (Long) session.getAttribute("sessionKey");
         userService.deleteUser(id, requestDto.getPassword());
