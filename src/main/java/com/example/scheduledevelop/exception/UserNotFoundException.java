@@ -1,7 +1,7 @@
 package com.example.scheduledevelop.exception;
 
-public class UserNotFountException extends RuntimeException {
-    public UserNotFountException() {
+public class UserNotFoundException extends RuntimeException {
+    public UserNotFoundException() {
 
         super("유저를 찾을 수 없습니다.");
     }

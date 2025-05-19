@@ -8,7 +8,7 @@ public interface ScheduleService {
 
     ScheduleInfoResponseDto scheduleFindById(Long id);
 
-    void delete(Long id, String password);
+    void delete(Long id, Long userId, String password);
 
-    ScheduleInfoResponseDto scheduleUpdate(Long id, String password,String title, String text);
+    ScheduleInfoResponseDto scheduleUpdate(Long id, Long userId, String password,String title, String text);
 }

@@ -21,6 +21,15 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    public UserInfoResponseDto login(String email, String password) {
+        User findUser = userRepository.findByEmailOrElse(email);
+        if (!findUser.getPassword().equals(password)) {
+            throw new WrongPasswordException();
+        }
+        return new UserInfoResponseDto(findUser.getId(), findUser.getUsername(), findUser.getEmail(), findUser.getCreateAt(), findUser.getUpdateAt());
+    }
+
+    @Override
     public UserInfoResponseDto userFindById(Long id) {
         User finduser = userRepository.findByIdOrElseThrow(id);
         return new UserInfoResponseDto(finduser.getId(), finduser.getUsername(), finduser.getEmail(), finduser.getCreateAt(), finduser.getUpdateAt());
