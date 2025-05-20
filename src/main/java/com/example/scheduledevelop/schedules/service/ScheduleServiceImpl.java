@@ -59,8 +59,8 @@ public class ScheduleServiceImpl implements ScheduleService{
     @Override
     public List<SchedulePageInfoResponseDto> schedulePage(Integer pageNum, Integer pageSize) {
         Pageable pageable = PageRequest.of(pageNum - 1 , pageSize, Sort.by(Sort.Direction.DESC, "updateAt"));
-        Page<Schedule> pageList = scheduleRepository.findAll(pageable);
-        return pageList.stream().map(m -> new SchedulePageInfoResponseDto(m.getTitle(), m.getText(), commentRepository.countByScheduleId(m.getId()), m.getCreateAt(), m.getUpdateAt(), m.getUser().getUsername())).toList();
+        Page<Schedule> pageList = scheduleRepository.findAllWithUser(pageable);
+        
     }
 
     private Schedule checkUserIdAndPassword(Long id, Long userId, String password) {
