@@ -1,17 +1,22 @@
 package com.example.scheduledevelop.schedules.service;
 
 
+import com.example.scheduledevelop.comment.repository.CommentRepository;
 import com.example.scheduledevelop.config.PasswordEncoder;
 import com.example.scheduledevelop.entity.Schedule;
 import com.example.scheduledevelop.entity.User;
 import com.example.scheduledevelop.exception.WrongPasswordException;
 import com.example.scheduledevelop.exception.WrongUserException;
 import com.example.scheduledevelop.schedules.dto.response.ScheduleInfoResponseDto;
+import com.example.scheduledevelop.schedules.dto.response.SchedulePageInfoResponseDto;
 import com.example.scheduledevelop.schedules.repository.ScheduleRepository;
 import com.example.scheduledevelop.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +24,7 @@ public class ScheduleServiceImpl implements ScheduleService{
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CommentRepository commentRepository;
 
     @Override
     public ScheduleInfoResponseDto scheduleCreate(Long id, String title, String text) {
@@ -48,6 +54,13 @@ public class ScheduleServiceImpl implements ScheduleService{
     @Override
     public void scheduleDelete(Long id, Long userId, String password) {
         scheduleRepository.delete(checkUserIdAndPassword(id, userId, password));
+    }
+
+    @Override
+    public List<SchedulePageInfoResponseDto> schedulePage(Integer pageNum, Integer pageSize) {
+        Pageable pageable = PageRequest.of(pageNum - 1 , pageSize, Sort.by(Sort.Direction.DESC, "updateAt"));
+        Page<Schedule> pageList = scheduleRepository.findAll(pageable);
+        return pageList.stream().map(m -> new SchedulePageInfoResponseDto(m.getTitle(), m.getText(), commentRepository.countByScheduleId(m.getId()), m.getCreateAt(), m.getUpdateAt(), m.getUser().getUsername())).toList();
     }
 
     private Schedule checkUserIdAndPassword(Long id, Long userId, String password) {

@@ -5,6 +5,7 @@ import com.example.scheduledevelop.schedules.dto.request.CreateScheduleRequestDt
 import com.example.scheduledevelop.schedules.dto.request.DeleteScheduleRequestDto;
 import com.example.scheduledevelop.schedules.dto.request.UpdateScheduleRequestDto;
 import com.example.scheduledevelop.schedules.dto.response.ScheduleInfoResponseDto;
+import com.example.scheduledevelop.schedules.dto.response.SchedulePageInfoResponseDto;
 import com.example.scheduledevelop.schedules.service.ScheduleService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -13,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/schedules")
@@ -32,6 +35,12 @@ public class ScheduleController {
     public ResponseEntity<ScheduleInfoResponseDto> scheduleFindById(@PathVariable Long id) {
         ScheduleInfoResponseDto responseDto = scheduleService.scheduleFindById(id);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<SchedulePageInfoResponseDto>> schedulePage(@RequestParam Integer pageNum, @RequestParam Integer pageSize) {
+        List<SchedulePageInfoResponseDto> response = scheduleService.schedulePage(pageNum,pageSize);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")
