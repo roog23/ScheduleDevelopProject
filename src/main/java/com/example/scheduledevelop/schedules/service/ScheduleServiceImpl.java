@@ -47,9 +47,7 @@ public class ScheduleServiceImpl implements ScheduleService{
 
     @Override
     public void scheduleDelete(Long id, Long userId, String password) {
-        Schedule schedule = checkUserIdAndPassword(id, userId, password);
-
-        scheduleRepository.delete(schedule);
+        scheduleRepository.delete(checkUserIdAndPassword(id, userId, password));
     }
 
     private Schedule checkUserIdAndPassword(Long id, Long userId, String password) {

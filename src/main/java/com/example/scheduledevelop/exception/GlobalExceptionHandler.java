@@ -31,6 +31,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
+    @ExceptionHandler(CommentNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleCommentNotFound(CommentNotFoundException e) {
+        ErrorResponseDto response = new ErrorResponseDto(
+                HttpStatus.NOT_FOUND.toString(),
+                e.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
     @ExceptionHandler(WrongUserException.class)
     public ResponseEntity<ErrorResponseDto> handleWrongUser(WrongUserException e) {
         ErrorResponseDto response = new ErrorResponseDto(
