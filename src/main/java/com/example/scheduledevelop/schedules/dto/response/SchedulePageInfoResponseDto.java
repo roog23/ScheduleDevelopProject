@@ -8,6 +8,7 @@ import java.time.LocalDate;
 @Getter
 @AllArgsConstructor
 public class SchedulePageInfoResponseDto {
+    private final Long scheduleId;
     private final String title;
     private final String text;
     private final int cntComment;

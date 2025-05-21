@@ -3,6 +3,7 @@ package com.example.scheduledevelop.schedules.service;
 
 import com.example.scheduledevelop.comment.repository.CommentRepository;
 import com.example.scheduledevelop.config.PasswordEncoder;
+import com.example.scheduledevelop.entity.Comment;
 import com.example.scheduledevelop.entity.Schedule;
 import com.example.scheduledevelop.entity.User;
 import com.example.scheduledevelop.exception.WrongPasswordException;
@@ -16,7 +17,9 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -60,7 +63,26 @@ public class ScheduleServiceImpl implements ScheduleService{
     public List<SchedulePageInfoResponseDto> schedulePage(Integer pageNum, Integer pageSize) {
         Pageable pageable = PageRequest.of(pageNum - 1 , pageSize, Sort.by(Sort.Direction.DESC, "updateAt"));
         Page<Schedule> pageList = scheduleRepository.findAllWithUser(pageable);
-        
+        List<Long> schedule = pageList.getContent().stream().map(Schedule::getId).toList();
+        List<Comment> scheduleComment = commentRepository.findByScheduleIdIn(schedule);
+        Map<Long, Integer> commentCount = new HashMap<>();
+
+        for(Comment comment : scheduleComment) {
+            Long scheduleId = comment.getSchedule().getId();
+            int count = commentCount.getOrDefault(scheduleId, 0);
+            commentCount.put(scheduleId, count + 1);
+        }
+
+        return pageList.getContent().stream()
+                .map(m ->
+                        new SchedulePageInfoResponseDto(m.getId(),
+                                m.getTitle(),
+                                m.getText(),
+                                commentCount.getOrDefault(m.getId(),0),
+                                m.getCreateAt(),
+                                m.getUpdateAt(),
+                                m.getUser().getUsername()))
+                .toList();
     }
 
     private Schedule checkUserIdAndPassword(Long id, Long userId, String password) {
