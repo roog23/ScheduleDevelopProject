@@ -5,11 +5,14 @@ import jakarta.servlet.Filter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+/**
+ * 필터를 등록합니다.
+ */
 @Configuration
-public class WebConfig implements WebMvcConfigurer {
+public class WebConfig{
 
+    //로그인 필터를 모든 요청에 대해서 처음으로 등록합니다.
     @Bean
     public FilterRegistrationBean loginFilter() {
         FilterRegistrationBean<Filter> filterRegistrationBean = new FilterRegistrationBean<>();

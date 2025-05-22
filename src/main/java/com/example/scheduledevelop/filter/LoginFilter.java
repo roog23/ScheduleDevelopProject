@@ -10,9 +10,12 @@ import org.springframework.util.PatternMatchUtils;
 
 import java.io.IOException;
 
+/**
+ * 로그인이 되어있는지 확인하는 필터입니다.
+ */
 public class LoginFilter implements Filter {
-
-    private static final String[] WHITE_LIST = {"/users", "/users/login"};
+    //필터 적용을 제외할 목록입니다.
+    private static final String[] WHITE_LIST = {"/users/create", "/users/login"};
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -22,6 +25,7 @@ public class LoginFilter implements Filter {
 
         if(!isWhiteList(requestURI)) {
             HttpSession session = httpRequest.getSession(false);
+            //세션이 존재하지 않거나 세션키가 존재하지 않으면 오류 메시지를 출력합니다.
             if(session == null || session.getAttribute("sessionKey") == null) {
                 ObjectMapper objectMapper = new ObjectMapper();
                 ErrorResponseDto errorResponseDto = new ErrorResponseDto("401 UNAUTHORIZED", "로그인이 필요합니다.");
@@ -36,6 +40,7 @@ public class LoginFilter implements Filter {
         chain.doFilter(request, response);
     }
 
+    //요청한 URL이 필터 적용 제외 대상인지 확인합니다.
     private boolean isWhiteList(String requestURI) {
         return PatternMatchUtils.simpleMatch(WHITE_LIST, requestURI);
     }

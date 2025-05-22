@@ -8,10 +8,19 @@ import java.time.LocalDate;
 @Getter
 @RequiredArgsConstructor
 public class UserInfoResponseDto {
-    private final Long id;
-    private final String username;
-    private final String email;
-    private final LocalDate createAt;
-    private final LocalDate updateAt;
 
+    //유저의 고유 식별자
+    private final Long userId;
+
+    //유저의 이름
+    private final String username;
+
+    //유저의 이메일
+    private final String email;
+
+    //유저 생성일
+    private final LocalDate createAt;
+
+    //유저의 마지막 수정일
+    private final LocalDate updateAt;
 }
