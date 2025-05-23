@@ -8,7 +8,6 @@ import com.example.scheduledevelop.schedules.dto.response.ScheduleInfoResponseDt
 import com.example.scheduledevelop.schedules.dto.response.SchedulePageInfoResponseDto;
 import com.example.scheduledevelop.schedules.service.ScheduleService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static com.example.scheduledevelop.users.controller.UserController.sessionUserId;
 
 /**
  * 할일 요청을 처리하는 컨트롤러입니다.
@@ -34,8 +35,7 @@ public class ScheduleController {
      */
     @PostMapping
     public ResponseEntity<ScheduleInfoResponseDto> scheduleCreate(@Valid @RequestBody CreateScheduleRequestDto requestDto, HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        Long userId = (Long) session.getAttribute("sessionKey");
+        Long userId = sessionUserId(request);
         ScheduleInfoResponseDto responseDto = scheduleService.scheduleCreate(userId, requestDto.getTitle(), requestDto.getText());
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
@@ -72,8 +72,7 @@ public class ScheduleController {
      */
     @PatchMapping("/{scheduleId}")
     public ResponseEntity<ScheduleInfoResponseDto> scheduleUpdate(@PathVariable Long scheduleId, @Valid @RequestBody UpdateScheduleRequestDto requestDto, HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        Long userId = (Long) session.getAttribute("sessionKey");
+        Long userId = sessionUserId(request);
         ScheduleInfoResponseDto responseDto = scheduleService.scheduleUpdate(scheduleId, userId, requestDto.getPassword(), requestDto.getTitle(), requestDto.getText());
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
@@ -87,9 +86,7 @@ public class ScheduleController {
      */
     @DeleteMapping("/{scheduleId}")
     public ResponseEntity<Void> scheduleDelete(@PathVariable Long scheduleId, @Valid @RequestBody DeleteScheduleRequestDto requestDto, HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        Long userId = (Long) session.getAttribute("sessionKey");
-
+        Long userId = sessionUserId(request);
         scheduleService.scheduleDelete(scheduleId, userId, requestDto.getPassword());
         return new ResponseEntity<>(HttpStatus.OK);
     }

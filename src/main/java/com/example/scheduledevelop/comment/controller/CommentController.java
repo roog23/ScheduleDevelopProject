@@ -7,12 +7,13 @@ import com.example.scheduledevelop.comment.dto.response.CommentInfoResponseDto;
 import com.example.scheduledevelop.comment.dto.response.InfoAllResponseDto;
 import com.example.scheduledevelop.comment.service.CommentService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import static com.example.scheduledevelop.users.controller.UserController.sessionUserId;
 
 /**
  * 댓글 요청을 처리하는 컨트롤러입니다.
@@ -32,8 +33,7 @@ public class CommentController {
      */
     @PostMapping("/{scheduleId}")
     public ResponseEntity<CommentInfoResponseDto> commentCreate(@PathVariable Long scheduleId, @Valid @RequestBody CreateCommentRequestDto requestDto, HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        Long userId = (Long) session.getAttribute("sessionKey");
+        Long userId = sessionUserId(request);
         CommentInfoResponseDto response = commentService.commentCreate(userId, scheduleId, requestDto.getComment());
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -58,8 +58,7 @@ public class CommentController {
      */
     @PatchMapping("/{commentId}")
     public ResponseEntity<CommentInfoResponseDto> commentUpdate(@PathVariable Long commentId, @Valid @RequestBody UpdateCommentRequestDto requestDto, HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        Long userId = (Long) session.getAttribute("sessionKey");
+        Long userId = sessionUserId(request);
         CommentInfoResponseDto response = commentService.commentUpdate(commentId, userId, requestDto.getPassword(), requestDto.getComment());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -73,8 +72,7 @@ public class CommentController {
      */
     @DeleteMapping("/{commentId}")
     public ResponseEntity<Void> commentDelete(@PathVariable Long commentId, @Valid @RequestBody DeleteCommentRequestDto requestDto, HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        Long userId = (Long) session.getAttribute("sessionKey");
+        Long userId = sessionUserId(request);
         commentService.commentDelete(commentId, userId, requestDto.getPassword());
         return new ResponseEntity<>(HttpStatus.OK);
     }

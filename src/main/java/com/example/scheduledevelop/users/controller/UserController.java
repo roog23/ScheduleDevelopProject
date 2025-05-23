@@ -72,8 +72,7 @@ public class UserController {
      */
     @PatchMapping
     public ResponseEntity<UserInfoResponseDto> userUpdate(@Valid @RequestBody UpdateUserRequestDto requestDto, HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        Long userId = (Long) session.getAttribute("sessionKey");
+        Long userId = sessionUserId(request);
         UserInfoResponseDto userInfoResponseDto = userService.userUpdate(userId, requestDto.getUsername(), requestDto.getPassword(), requestDto.getEmail());
         return new ResponseEntity<>(userInfoResponseDto, HttpStatus.OK);
     }
@@ -81,15 +80,24 @@ public class UserController {
     /**
      * 유저 정보를 삭제합니다.
      * @param requestDto    삭제를 원하는 유저의 비밀번호를 담고 있는 요청 DTO
-     * @param request       세션 키 정보 (userId)를 얻는데 사용
+     * @param request       세션 키 정보 (userId)를 얻고 유저 삭제 시 세션 삭제
      * @return              HttpStatus.OK 응답
      */
     @DeleteMapping
     public ResponseEntity<Void> userDelete(@Valid @RequestBody DeleteUserRequestDto requestDto, HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        Long userId = (Long) session.getAttribute("sessionKey");
+        Long userId = sessionUserId(request);
         userService.userDelete(userId, requestDto.getPassword());
-        session.invalidate();
+        request.getSession(false).invalidate();     //세션을 삭제합니다.
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * 세션에 들어있는 세션 키를 반환합니다.
+     * @param request   세션 키 정보 (userId)를 얻는데 사용
+     * @return          세션 키 (userId)를 반환
+     */
+    public static Long sessionUserId(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        return (Long) session.getAttribute("sessionKey");
     }
 }
