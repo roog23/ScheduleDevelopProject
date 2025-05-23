@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UserServiceImpl implements UserService{
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -40,6 +41,7 @@ public class UserServiceImpl implements UserService{
      * @return          로그인 된 유저의 정보
      */
     @Override
+    @Transactional(readOnly = true)
     public UserInfoResponseDto userLogin(String email, String password) {
         User findUser = userRepository.findByEmailOrElse(email);
         checkUserPassword(findUser, password);
@@ -53,6 +55,7 @@ public class UserServiceImpl implements UserService{
      * @return       찾은 해당 유저의 정보
      */
     @Override
+    @Transactional(readOnly = true)
     public UserInfoResponseDto userFindById(Long userId) {
         User finduser = userRepository.findByIdOrElseThrow(userId);
 
@@ -67,7 +70,6 @@ public class UserServiceImpl implements UserService{
      * @param email     수정할 메일
      * @return          수정된 유저의 정보
      */
-    @Transactional
     @Override
     public UserInfoResponseDto userUpdate(Long userId, String username, String password, String email) {
         User findUser = userRepository.findByIdOrElseThrow(userId);
@@ -83,7 +85,6 @@ public class UserServiceImpl implements UserService{
      * @param userId    삭제를 원하는 유저의 식별자
      * @param password  입력받은 비밀번호
      */
-    @Transactional
     @Override
     public void userDelete(Long userId, String password) {
         User findUser = userRepository.findByIdOrElseThrow(userId);

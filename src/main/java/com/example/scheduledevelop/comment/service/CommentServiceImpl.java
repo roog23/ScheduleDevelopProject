@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @AllArgsConstructor
+@Transactional
 public class CommentServiceImpl implements CommentService{
     public final CommentRepository commentRepository;
     public final UserRepository userRepository;
@@ -48,6 +49,7 @@ public class CommentServiceImpl implements CommentService{
      * @return          찾은 해당 댓글의 정보
      */
     @Override
+    @Transactional(readOnly = true)
     public InfoAllResponseDto commentFindById(Long commentId) {
         Comment findComment = commentRepository.findByIdOrElseThrow(commentId);
         return new InfoAllResponseDto( findComment.getUser().getUsername(), findComment.getUser().getEmail(), findComment.getSchedule().getScheduleId(), findComment.getSchedule().getTitle(), findComment.getSchedule().getText(), findComment.getCommentId(), findComment.getComment(), findComment.getCreateAt(), findComment.getUpdateAt());
@@ -61,7 +63,6 @@ public class CommentServiceImpl implements CommentService{
      * @param comment   수정할 댓글 내용
      * @return          수정된 댓글 정보
      */
-    @Transactional
     @Override
     public CommentInfoResponseDto commentUpdate(Long commentId, Long userId, String password, String comment) {
         Comment findComment = checkUserAndPassword(commentId, userId, password);
@@ -75,7 +76,6 @@ public class CommentServiceImpl implements CommentService{
      * @param userId    삭제를 원하는 유저 식별자
      * @param password  입력받은 비밀번호
      */
-    @Transactional
     @Override
     public void commentDelete(Long commentId, Long userId, String password) {
         commentRepository.delete(checkUserAndPassword(commentId, userId, password));

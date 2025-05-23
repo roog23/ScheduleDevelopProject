@@ -26,6 +26,7 @@ import java.util.Map;
  */
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ScheduleServiceImpl implements ScheduleService{
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
@@ -54,6 +55,7 @@ public class ScheduleServiceImpl implements ScheduleService{
      * @return      찾은 할일의 정보
      */
     @Override
+    @Transactional(readOnly = true)
     public ScheduleInfoResponseDto scheduleFindById(Long scheduleId) {
         Schedule findSchedule = scheduleRepository.findByIdOrElseThrow(scheduleId);
 
@@ -69,7 +71,6 @@ public class ScheduleServiceImpl implements ScheduleService{
      * @param text          수정할 할일 내용
      * @return              수정된 할일의 정보
      */
-    @Transactional
     @Override
     public ScheduleInfoResponseDto scheduleUpdate(Long scheduleId, Long userId, String password, String title, String text) {
         Schedule schedule = checkUserIdAndPassword(scheduleId, userId, password);
@@ -84,7 +85,6 @@ public class ScheduleServiceImpl implements ScheduleService{
      * @param userId        삭제를 요청한 유저
      * @param password      입력받은 비밀번호
      */
-    @Transactional
     @Override
     public void scheduleDelete(Long scheduleId, Long userId, String password) {
         scheduleRepository.delete(checkUserIdAndPassword(scheduleId, userId, password));
@@ -97,6 +97,7 @@ public class ScheduleServiceImpl implements ScheduleService{
      * @return          페이지에 해당하는 할일의 정보
      */
     @Override
+    @Transactional(readOnly = true)
     public List<SchedulePageInfoResponseDto> schedulePage(Integer pageNum, Integer pageSize) {
         Pageable pageable = PageRequest.of(pageNum - 1 , pageSize, Sort.by(Sort.Direction.DESC, "updateAt"));
         Page<Schedule> pageList = scheduleRepository.findAllWithUser(pageable);
